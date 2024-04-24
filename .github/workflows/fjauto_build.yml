@@ -45,6 +45,7 @@ jobs:
         echo "Host *" >> ~/.ssh/config
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
         echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
+        git clone ${REPO_URL} -b ${REPO_BRANCH} fut
         ln -sf /mnt/workdir/ftu $GITHUB_WORKSPACE/ftu
 
     - name: 构建arm-none-eabi
