@@ -78,6 +78,11 @@ jobs:
         body_path: release.txt
         files: /mnt/workdir/*.zip
 
+    - name: 清理环境
+      working-directory: /mnt/workdir
+      run: |
+        rm -rf ftu
+        
     - name: 清理Releases
       uses: dev-drprasad/delete-older-releases@v0.2.1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
