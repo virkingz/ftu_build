@@ -40,6 +40,7 @@ jobs:
       run: |
         df -hT $PWD
         mkdir ~/.ssh
+        chmod -R 700 /root/.ssh
         echo "${{ secrets.GIT_SSH_KEY }}" > ~/.ssh/id_rsa
         echo "${{ secrets.GIT_SSH_PUB_KEY }}" > ~/.ssh/id_rsa.pub
         echo "Host *" >> ~/.ssh/config
