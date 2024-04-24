@@ -1,0 +1,115 @@
+name: hn_build
+
+on:
+  workflow_dispatch:
+    inputs:
+        ssh:
+          description: 'SSH connection to Actions'
+          required: false
+          default: 'false'
+env:
+  REPO_URL: git@e.coding.net:yu308/hn/hn_ftu.git
+  REPO_BRANCH: develop_wz
+  UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: true
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: 检查分支
+      uses: actions/checkout@v3
+
+    - name: 编译环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install $(curl -fsSL git.io/depends-ubuntu-2004)
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+        sudo timedatectl set-timezone "$TZ"
+        sudo mkdir -p /mnt/workdir
+        sudo chown $USER:$GROUPS /mnt/workdir
+        
+    - name: 克隆源代码
+      working-directory: /mnt/workdir
+      run: |
+        df -hT $PWD
+        mkdir ~/.ssh
+        chmod -R 700 ~/.ssh
+        echo "${{ secrets.GIT_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "${{ secrets.GIT_SSH_PUB_KEY }}" > ~/.ssh/id_rsa.pub
+        chmod 644 ~/.ssh/id_rsa.pub
+        echo "Host *" >> ~/.ssh/config
+        echo "StrictHostKeyChecking no" >> ~/.ssh/config
+        echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
+        chmod 644 ~/.ssh/config
+        git clone ${REPO_URL} -b ${REPO_BRANCH} ftu
+        ln -sf /mnt/workdir/ftu $GITHUB_WORKSPACE/ftu
+        git clone git@e.coding.net:yu308/faschemes/FASchemes.git 
+        ln -sf /mnt/workdir/FASchemes $GITHUB_WORKSPACE/FASchemes
+        git clone git@e.coding.net:yu308/packages/Reclose.git
+        ln -sf /mnt/workdir/Reclose $GITHUB_WORKSPACE/Reclose
+
+    - name: 构建arm-none-eabi
+      working-directory: /mnt/workdir
+      run: |
+        wget https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
+        tar -xvf arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
+        sudo ln -s /mnt/workdir/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-* /usr/bin
+
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: github.event.inputs.ssh != 'false'
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+    - name: 构建ftu
+      id: compile
+      run: |
+        cd ftu
+        sed -i 's#https://e.coding.net/#git@e.coding.net:#g' cmake/GIT.cmake
+        rm -rf pkgs/wiznet
+        bash makebin.sh
+        [ $? = 0 ] && echo "status=success" >> $GITHUB_OUTPUT
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: 生成Releases标签
+      id: tag
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        touch release.txt
+        echo "budil: $REPO_BRANCH" >> release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+    
+    - name: 上传固件到Releases
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: /mnt/workdir/*.zip
+
+    - name: 清理环境
+      working-directory: /mnt/workdir
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      run: |
+        rm -rf ftu
+        
+    - name: 清理Releases
+      uses: dev-drprasad/delete-older-releases@v0.2.1
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      with:
+        keep_latest: 30
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
