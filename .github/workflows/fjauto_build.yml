@@ -99,6 +99,7 @@ jobs:
 
     - name: 清理环境
       working-directory: /mnt/workdir
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         rm -rf ftu
         
