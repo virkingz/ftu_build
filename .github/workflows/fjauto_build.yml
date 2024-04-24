@@ -51,6 +51,9 @@ jobs:
         chmod 644 ~/.ssh/config
         git clone ${REPO_URL} -b ${REPO_BRANCH} ftu
         ln -sf /mnt/workdir/ftu $GITHUB_WORKSPACE/ftu
+        git clone git@e.coding.net:yu308/faschemes/FASchemes.git 
+        ln -sf /mnt/workdir/FASchemes $GITHUB_WORKSPACE/FASchemes
+        
 
     - name: 构建arm-none-eabi
       working-directory: /mnt/workdir
