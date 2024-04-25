@@ -12,6 +12,7 @@ env:
   REPO_BRANCH: develop_wz
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
+  DIY_SH: hn.sh
   TZ: Asia/Shanghai
 
 jobs:
@@ -55,6 +56,10 @@ jobs:
         ln -sf /mnt/workdir/FASchemes $GITHUB_WORKSPACE/FASchemes
         git clone git@e.coding.net:yu308/packages/Reclose.git
         ln -sf /mnt/workdir/Reclose $GITHUB_WORKSPACE/Reclose
+        
+    - name: 运行定制化脚本
+      run: |
+        bash sh/${DIY_SH}
 
     - name: 构建arm-none-eabi
       working-directory: /mnt/workdir
