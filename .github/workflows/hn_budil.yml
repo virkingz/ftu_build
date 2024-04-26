@@ -93,7 +93,7 @@ jobs:
           RELEASE_ID=$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/hn_ftu_develop" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             | jq '.id')
-          echo "::set-output name=release_id::$RELEASE_ID"
+          echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件到Releases
