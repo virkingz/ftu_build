@@ -108,11 +108,10 @@ jobs:
       id: tag
       uses: actions/create-release@v1
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.token }}
       with:
-        tag_name: $REPO_BRANCH
-        release_name: Release $REPO_BRANCH
-        draft: false
-        prerelease: false
+        tag_name: ${REPO_BRANCH}
     
     - name: 上传固件到Releases
       uses: actions/upload-release-asset@v1
