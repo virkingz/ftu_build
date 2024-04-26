@@ -87,47 +87,24 @@ jobs:
         temp=`ls /mnt/workdir/*.zip`
         echo "UPLOADFILE=${temp##*/}" >> $GITHUB_OUTPUT
 
-    - name: 获取Release
-      id: getrelease
+    - name: 生成Releases标签
+      id: tag
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-          RELEASE_ID=$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            | jq '.id')
-          echo "$RELEASE_ID"
-          echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
-          echo "status=success" >> $GITHUB_OUTPUT
-          echo "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/$RELEASE_ID/assets"
-          echo "url=https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" >> $GITHUB_OUTPUT
-
+        echo "release_tag=$(date +"%Y%m%d%H%M")_$REPO_BRANCH" >> $GITHUB_OUTPUT
+        touch release.txt
+        echo "budil: $REPO_BRANCH" >> release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
+    
     - name: 上传固件到Releases
-      uses: actions/upload-release-asset@v1.0.2
-      if: steps.compile.outputs.status == 'success' && !cancelled()
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-          upload_url: ${{ steps.getrelease.outputs.url }}
-          asset_path: /mnt/workdir/${{ steps.compile.outputs.UPLOADFILE }}
-          asset_name: ${{ steps.compile.outputs.UPLOADFILE }}
-          asset_content_type: application/zip
-
-    # - name: 生成Releases标签
-    #   id: tag
-    #   if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled() && steps.get_release.outputs.release_id == ''
-    #   run: |
-    #     echo "release_tag=${REPO_BRANCH}" >> $GITHUB_OUTPUT
-    #     touch release.txt
-    #     echo "budil: $REPO_BRANCH" >> release.txt
-    #     echo "status=success" >> $GITHUB_OUTPUT
-    
-    # - name: 上传固件到Releases
-    #   uses: softprops/action-gh-release@v1
-    #   if: steps.tag.outputs.status == 'success' && !cancelled() && steps.get_release.outputs.release_id == ''
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     tag_name: ${{ steps.tag.outputs.release_tag }}
-    #     body_path: release.txt
-    #     files: /mnt/workdir/*.zip
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: /mnt/workdir/*.zip
     
     - name: 清理环境
       working-directory: /mnt/workdir
@@ -139,7 +116,7 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.2.1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 30
+        keep_latest: 300
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
