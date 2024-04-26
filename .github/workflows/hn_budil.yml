@@ -103,7 +103,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-          upload_url: https://uploads.github.com/repos/${{GITHUB_REPOSITORY}}/releases/${{ steps.getrelease.outputs.release_id }}/assets
+          upload_url: https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${{ steps.getrelease.outputs.release_id }}/assets
           asset_path: /mnt/workdir/${{ steps.compile.outputs.UPLOADFILE }}
           asset_name: ${{ steps.compile.outputs.UPLOADFILE }}
           asset_content_type: application/gzip
