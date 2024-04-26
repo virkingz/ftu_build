@@ -96,6 +96,8 @@ jobs:
           echo "$RELEASE_ID"
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
           echo "status=success" >> $GITHUB_OUTPUT
+          echo "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/$RELEASE_ID/assets"
+          echo "url=https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets" >> $GITHUB_OUTPUT
 
     - name: 上传固件到Releases
       uses: actions/upload-release-asset@v1
@@ -103,7 +105,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-          upload_url: https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${{ steps.getrelease.outputs.release_id }}/assets
+          upload_url: ${{ steps.getrelease.outputs.url }}
           asset_path: /mnt/workdir/${{ steps.compile.outputs.UPLOADFILE }}
           asset_name: ${{ steps.compile.outputs.UPLOADFILE }}
           asset_content_type: application/gzip
