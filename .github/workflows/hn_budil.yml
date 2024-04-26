@@ -90,7 +90,7 @@ jobs:
     - name: 获取Release
       id: getrelease
       run: |
-          RELEASE_ID=$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/${RELEASE_TAG}" \
+          RELEASE_ID=$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/hn_ftu_develop" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             | jq '.id')
           echo "::set-output name=release_id::$RELEASE_ID"
