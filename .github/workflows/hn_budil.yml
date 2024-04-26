@@ -85,42 +85,44 @@ jobs:
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
         temp=`ls /mnt/workdir/*.zip`
         echo "UPLOADFILE=${temp##*/}" >> $GITHUB_ENV
-        
-    # - name: 生成Releases标签
-    #   id: tag
-    #   if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
-    #   run: |
-    #     echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
-    #     touch release.txt
-    #     echo "budil: $REPO_BRANCH" >> release.txt
-    #     echo "status=success" >> $GITHUB_OUTPUT
-    
-    # - name: 上传固件到Releases
-    #   uses: softprops/action-gh-release@v1
-    #   if: steps.tag.outputs.status == 'success' && !cancelled()
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     tag_name: ${{ steps.tag.outputs.release_tag }}
-    #     body_path: release.txt
-    #     files: /mnt/workdir/*.zip
+
+    - name: 获取Release
+      id: getrelease
+      run: |
+          RELEASE_ID=$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$REPO_BRANCH" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            | jq '.id')
+          echo "::set-output name=release_id::$RELEASE_ID"
+          echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload APK
+      uses: actions/upload-release-asset@v1
+      if: steps.compile.getrelease.status == 'success' && !cancelled() && steps.get_release.outputs.release_id != ''
+      with:
+          upload_url: https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/${{ steps.get_release.outputs.release_id }}/assets
+          asset_path: app/build/outputs/apk/release/app-release.apk
+          asset_name: app-release.apk
+          asset_content_type: application/vnd.android.package-archive
+
     - name: 生成Releases标签
       id: tag
-      uses: actions/create-release@v1
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.token }}
-      with:
-        tag_name: ${REPO_BRANCH}
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled() && steps.get_release.outputs.release_id == ''
+      run: |
+        echo "release_tag=${REPO_BRANCH}" >> $GITHUB_OUTPUT
+        touch release.txt
+        echo "budil: $REPO_BRANCH" >> release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
     
     - name: 上传固件到Releases
-      uses: actions/upload-release-asset@v1
+      uses: softprops/action-gh-release@v1
+      if: steps.tag.outputs.status == 'success' && !cancelled() && steps.get_release.outputs.release_id == ''
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.tag.outputs.upload_url }}
-        asset_path: /mnt/workdir/env.UPLOADFILE
-        asset_name: env.UPLOADFILE
-        asset_content_type: application/zip
-
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        body_path: release.txt
+        files: /mnt/workdir/*.zip
+    
     - name: 清理环境
       working-directory: /mnt/workdir
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
