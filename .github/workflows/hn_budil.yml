@@ -100,6 +100,8 @@ jobs:
     - name: 上传固件到Releases
       uses: actions/upload-release-asset@v1
       if: steps.compile.outputs.status == 'success' && !cancelled()
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/${{ steps.get_release.outputs.release_id }}/assets
           asset_path: /mnt/workdir/${{ steps.compile.outputs.UPLOADFILE }}
