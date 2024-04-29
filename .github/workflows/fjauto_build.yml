@@ -9,10 +9,12 @@ on:
           default: 'false'
 env:
   REPO_URL: git@e.coding.net:yu308/fjauto/fjauto_ftu.git
-  REPO_BRANCH: develop_wz
+  REPO_BRANCH: develop
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
+  DIY_SH: fjauto.sh
   TZ: Asia/Shanghai
+  RELEASE_TAG: fjauto_ftu_develop
 
 jobs:
   build:
@@ -53,7 +55,12 @@ jobs:
         ln -sf /mnt/workdir/ftu $GITHUB_WORKSPACE/ftu
         git clone git@e.coding.net:yu308/faschemes/FASchemes.git 
         ln -sf /mnt/workdir/FASchemes $GITHUB_WORKSPACE/FASchemes
+        git clone git@e.coding.net:yu308/packages/Reclose.git
+        ln -sf /mnt/workdir/Reclose $GITHUB_WORKSPACE/Reclose
         
+    - name: 运行定制化脚本
+      run: |
+        bash sh/${DIY_SH}
 
     - name: 构建arm-none-eabi
       working-directory: /mnt/workdir
@@ -74,16 +81,17 @@ jobs:
       run: |
         cd ftu
         sed -i 's#https://e.coding.net/#git@e.coding.net:#g' cmake/GIT.cmake
-        rm -rf pkgs/wiznet
         bash makebin.sh
         [ $? = 0 ] && echo "status=success" >> $GITHUB_OUTPUT
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        temp=`ls /mnt/workdir/*.zip`
+        echo "UPLOADFILE=${temp##*/}" >> $GITHUB_OUTPUT
 
     - name: 生成Releases标签
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y%m%d%H%M")_$REPO_BRANCH" >> $GITHUB_OUTPUT
         touch release.txt
         echo "budil: $REPO_BRANCH" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
@@ -97,7 +105,7 @@ jobs:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: /mnt/workdir/*.zip
-
+    
     - name: 清理环境
       working-directory: /mnt/workdir
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
@@ -108,7 +116,7 @@ jobs:
       uses: dev-drprasad/delete-older-releases@v0.2.1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 30
+        keep_latest: 300
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
