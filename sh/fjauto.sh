@@ -7,6 +7,10 @@ git submodule sync
 # 获取子模块
 git submodule update --init --recursive
 
+#uffs
+git clone https://gitee.com/RT-Thread-Mirror/uffs.git pkgs/uffs
+git clone https://gitee.com/RT-Thread-Mirror/CmBacktrace.git pkgs/cmbacktrace
+
 # 修改 uffs
 sed -i "s/st_atime/atime/g" pkgs/uffs/src/uffs/uffs_fd.c
 sed -i "s/st_mtime/mtime/g" pkgs/uffs/src/uffs/uffs_fd.c
