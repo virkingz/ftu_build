@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd ftu
+sed -i "s#https://e.coding.net/yu308#git@e.coding.net:yu308#g" .gitmodule
 
 # 获取子模块
 git submodule update --init --recursive
