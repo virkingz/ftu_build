@@ -91,7 +91,7 @@ jobs:
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=$(date +"%Y%m%d%H%M")_$REPO_BRANCH" >> $GITHUB_OUTPUT
+        echo "release_tag=$RELEASE_TAG_$(date +"%Y%m%d%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         echo "budil: $REPO_BRANCH" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
