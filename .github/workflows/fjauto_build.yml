@@ -53,10 +53,6 @@ jobs:
         chmod 644 ~/.ssh/config
         git clone ${REPO_URL} -b ${REPO_BRANCH} ftu
         ln -sf /mnt/workdir/ftu $GITHUB_WORKSPACE/ftu
-        git clone git@e.coding.net:yu308/faschemes/FASchemes.git 
-        ln -sf /mnt/workdir/FASchemes $GITHUB_WORKSPACE/FASchemes
-        git clone git@e.coding.net:yu308/packages/Reclose.git
-        ln -sf /mnt/workdir/Reclose $GITHUB_WORKSPACE/Reclose
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
