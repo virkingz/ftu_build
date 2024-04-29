@@ -57,7 +57,14 @@ jobs:
         ln -sf /mnt/workdir/FASchemes $GITHUB_WORKSPACE/FASchemes
         git clone git@e.coding.net:yu308/packages/Reclose.git
         ln -sf /mnt/workdir/Reclose $GITHUB_WORKSPACE/Reclose
-        
+
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: github.event.inputs.ssh != 'false'
+      env:
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    
     - name: 运行定制化脚本
       run: |
         bash sh/${DIY_SH}
@@ -68,13 +75,6 @@ jobs:
         wget https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
         tar -xvf arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
         sudo ln -s /mnt/workdir/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-* /usr/bin
-
-    - name: SSH connection to Actions
-      uses: P3TERX/ssh2actions@v1.0.0
-      if: github.event.inputs.ssh != 'false'
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     - name: 构建ftu
       id: compile
