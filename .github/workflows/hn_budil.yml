@@ -9,7 +9,7 @@ on:
           default: 'false'
 env:
   REPO_URL: git@e.coding.net:yu308/hn/hn_ftu.git
-  REPO_BRANCH: develop
+  REPO_BRANCH: develop_wz
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   DIY_SH: hn.sh
