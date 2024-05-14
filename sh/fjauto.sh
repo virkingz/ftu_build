@@ -36,3 +36,6 @@ sed -i 's/RT_WEAK/rt_weak/g' pkgs/cmbacktrace/cmb_port.c
 
 # 修改 RTT ctime.c
 sed -i '1,751d' rtthread/components/libc/compilers/common/ctime.c
+
+# 拷贝依赖库
+cp ../lib/fjauto/* ./
