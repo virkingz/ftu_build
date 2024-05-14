@@ -10,7 +10,7 @@ git submodule update --init --recursive
 #rtthread
 git clone --recursive -b v5.0.2 https://github.com/RT-Thread/rt-thread.git rtthread
 #
-git clone --recursive -b v1.9.1 https://e.coding.net/yu308/project/STM32CubeH7.git stm32hal
+git clone --recursive -b v1.9.1 git@e.coding.net:yu308/project/STM32CubeH7.git stm32hal
 cp stm32hal/Drivers/CMSIS/DSP/Lib/GCC/libarm_cortexM7lfdp_math.a stm32hal/
 
 #uffs
