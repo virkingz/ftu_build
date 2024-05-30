@@ -33,3 +33,6 @@ sed -i "s/st_mtime/mtime/g" pkgs/uffs/src/inc/uffs/uffs_fd.h
 sed -i "s/st_ctime/ctime/g" pkgs/uffs/src/inc/uffs/uffs_fd.h
 
 sed -i '20i #include <string.h>' rtthread/components/drivers/include/drivers/mtd_nand.h
+
+cd module/FASchemes
+git checkout 51826fb3b911543fb0eabb0b6c78c239f94fcf70
