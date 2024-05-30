@@ -19,6 +19,8 @@ git clone --recursive -b v4.0.5 https://github.com/RT-Thread/rt-thread.git rtthr
 git clone --recursive -b v1.9.1 git@e.coding.net:yu308/project/STM32CubeH7.git stm32hal
 cp stm32hal/Drivers/CMSIS/DSP/Lib/GCC/libarm_cortexM7lfdp_math.a stm32hal/
 
+#uffs
+git clone --depth=1 https://github.com/RT-Thread-packages/uffs.git pkgs/uffs
 
 # 修改 stdio 注释第67行
 sed -i -e '67 s/^/\/\//' rtthread/components/libc/compilers/gcc/newlib/stdio.c
