@@ -11,7 +11,7 @@ git submodule sync
 git submodule update --init --recursive
 
 # 同步子模块远程仓库至本地
-git submodule update --remote
+#git submodule update --remote
 
 #rtthread
 git clone --recursive -b v4.0.5 https://github.com/RT-Thread/rt-thread.git rtthread
@@ -38,5 +38,3 @@ sed -i '20i #include <string.h>' rtthread/components/drivers/include/drivers/mtd
 
 cd module/FASchemes
 git checkout 51826fb3b911543fb0eabb0b6c78c239f94fcf70
-cd module/hubProtect
-git checkout 9f004192924c
