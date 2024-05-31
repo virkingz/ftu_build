@@ -38,3 +38,5 @@ sed -i '20i #include <string.h>' rtthread/components/drivers/include/drivers/mtd
 
 cd module/FASchemes
 git checkout 51826fb3b911543fb0eabb0b6c78c239f94fcf70
+cd module/hubProtect
+git checkout 9f004192924c
