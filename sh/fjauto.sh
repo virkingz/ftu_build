@@ -4,11 +4,11 @@ pwd
 # 拷贝依赖库
 cp lib/fjauto/* ./ftu
 cd ftu
-sed -i "s#https://e.coding.net/yu308#git@e.coding.net:yu308#g" .gitmodules
+    ###sed -i "s#https://e.coding.net/yu308#git@e.coding.net:yu308#g" .gitmodules
 sed -i "s#https://e.coding.net/yu308#git@e.coding.net:yu308#g" cmake/GIT.cmake
-git submodule sync
+    ###git submodule sync
 # 获取子模块
-git submodule update --init --recursive
+    ###git submodule update --init --recursive
 
 # 同步子模块远程仓库至本地
 #git submodule update --remote
@@ -36,5 +36,3 @@ sed -i "s/st_ctime/ctime/g" pkgs/uffs/src/inc/uffs/uffs_fd.h
 
 sed -i '20i #include <string.h>' rtthread/components/drivers/include/drivers/mtd_nand.h
 
-#cd module/FASchemes
-#git checkout 51826fb3b911543fb0eabb0b6c78c239f94fcf70
