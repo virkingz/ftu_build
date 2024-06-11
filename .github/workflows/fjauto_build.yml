@@ -82,12 +82,13 @@ jobs:
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
         temp=`ls /mnt/workdir/*.zip`
         echo "UPLOADFILE=${temp##*/}" >> $GITHUB_OUTPUT
+        echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
 
     - name: 上传固件
       uses: ncipollo/release-action@main
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-          tag: ${{ RELEASE_TAG }}
+          tag: ${{ steps.compile.outputs.release_tag }}
           artifacts: /mnt/workdir/*.zip
           allowUpdates: true
           removeArtifacts: false
