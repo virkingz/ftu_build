@@ -22,6 +22,9 @@ cp stm32hal/Drivers/CMSIS/DSP/Lib/GCC/libarm_cortexM7lfdp_math.a stm32hal/
 #uffs
 git clone --depth=1 https://github.com/RT-Thread-packages/uffs.git pkgs/uffs
 
+#thread_pool
+git clone --depth=1  https://github.com/armink-rtt-pkgs/thread_pool.git pkgs/thread_pool
+
 # 修改 stdio 注释第67行
 sed -i -e '67 s/^/\/\//' rtthread/components/libc/compilers/gcc/newlib/stdio.c
 
@@ -35,4 +38,4 @@ sed -i "s/st_mtime/mtime/g" pkgs/uffs/src/inc/uffs/uffs_fd.h
 sed -i "s/st_ctime/ctime/g" pkgs/uffs/src/inc/uffs/uffs_fd.h
 
 sed -i '20i #include <string.h>' rtthread/components/drivers/include/drivers/mtd_nand.h
-
+sed -i '14i #include <stdint.h>' pkgs/thread_pool/thread_pool.h
