@@ -94,7 +94,9 @@ jobs:
           removeArtifacts: false
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
-
+          body: |
+            ### 福建自动化编译生成文件
+            - 按照时间排布，每天一个文件
     # - name: 生成Releases标签
     #   id: tag
     #   if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
