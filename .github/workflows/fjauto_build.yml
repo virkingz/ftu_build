@@ -85,9 +85,9 @@ jobs:
 
     - name: 上传固件
       uses: ncipollo/release-action@main
-      if: ${{ env.PACKAGED_STATUS }} == 'success' && !cancelled()
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-          tag: ${RELEASE_TAG}
+          tag: ${{ RELEASE_TAG }}
           artifacts: /mnt/workdir/*.zip
           allowUpdates: true
           removeArtifacts: false
