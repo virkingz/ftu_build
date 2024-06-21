@@ -9,7 +9,7 @@ on:
           default: 'false'
 env:
   REPO_URL: git@e.coding.net:yu308/fjauto/fjauto_ftu.git
-  REPO_BRANCH: develop_HeNan
+  REPO_BRANCH: 868ff2f5759ff97ebe42f62e30cd85c4df5b6b9b
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   DIY_SH: fjauto.sh
