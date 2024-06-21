@@ -52,6 +52,8 @@ jobs:
         echo "UserKnownHostsFile /dev/null" >> ~/.ssh/config
         chmod 644 ~/.ssh/config
         git clone ${REPO_URL} -b ${REPO_BRANCH} ftu
+        cd ftu
+        git checkout 868ff2f5759ff97ebe42f62e30cd85c4df5b6b9b
         ln -sf /mnt/workdir/ftu $GITHUB_WORKSPACE/ftu
 
     - name: SSH connection to Actions
